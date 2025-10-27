@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard Pro - Scanning</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --neon-green: #00ff41;
+            --neon-blue: #00eeff;
+            --neon-purple: #b967ff;
+            --neon-red: #ff003c;
+            --dark-bg: #0a0a0a;
+            --darker-bg: #050505;
+            --card-bg: rgba(16, 16, 16, 0.8);
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 65, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 238, 255, 0.05) 0%, transparent 20%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .cyber-header {
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(5, 5, 5, 0.98) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--neon-green);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green);
+            text-decoration: none;
+        }
+
+        /* Scanning Section */
+        .scanning-section {
+            margin-top: 100px;
+            text-align: center;
+        }
+
+        .scanning-header {
+            margin-bottom: 3rem;
+        }
+
+        .cyber-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--neon-red), var(--neon-purple));
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            animation: glow 2s infinite alternate;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .scanning-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+        }
+
+        .scanning-subtitle {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 2rem;
+        }
+
+        .target-display {
+            background: var(--card-bg);
+            border: 2px solid var(--neon-blue);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            box-shadow: 0 0 30px rgba(0, 238, 255, 0.2);
+        }
+
+        .target-url {
+            font-family: monospace;
+            font-size: 1.3rem;
+            color: var(--neon-green);
+            word-break: break-all;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            background: var(--card-bg);
+            border: 2px solid var(--neon-green);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 800px;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.2);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .progress-title {
+            font-size: 1.5rem;
+            color: var(--neon-green);
+        }
+
+        .progress-percentage {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* Mission Log */
+        .mission-log {
+            background: var(--darker-bg);
+            border: 1px solid var(--neon-purple);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-title {
+            color: var(--neon-purple);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .log-entry {
+            padding: 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-icon {
+            font-size: 1.2rem;
+        }
+
+        .log-time {
+            color: #888;
+            font-size: 0.9rem;
+            min-width: 80px;
+        }
+
+        .log-message {
+            flex: 1;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            margin-top: 3rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .critical { color: var(--neon-red); }
+        .high { color: #ff6b00; }
+        .medium { color: #ffc107; }
+        .low { color: var(--neon-green); }
+
+        .result-label {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
+            color: var(--dark-bg);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid var(--neon-blue);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.4);
+        }
+
+        /* Animations */
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px var(--neon-red); }
+            100% { box-shadow: 0 0 30px var(--neon-purple); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Loading Animation */
+        .cyber-loader {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .loader-dots {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--neon-green);
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .scanning-title {
+                font-size: 2rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="cyber-header">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>CYBERGUARD PRO</span>
+            </a>
+            <div class="scan-info">
+                <span id="currentStep">{{ t.initializing }}</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <section class="scanning-section">
+            <div class="scanning-header">
+                <div class="cyber-badge pulse">
+                    <i class="fas fa-satellite-dish"></i>
+                    {{ t.scanning_title }}
+                </div>
+                <h1 class="scanning-title">{{ t.scanning }}</h1>
+                <p class="scanning-subtitle">{{ t.scanning_subtitle }}</p>
+            </div>
+
+            <!-- Target Display -->
+            <div class="target-display">
+                <div style="color: #888; margin-bottom: 0.5rem;">{{ t.target }}</div>
+                <div class="target-url" id="targetUrl">{{ target }}</div>
+            </div>
+
+            <!-- Progress Section -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <div class="progress-title">{{ t.scan_progress }}</div>
+                    <div class="progress-percentage" id="progressPercentage">0%</div>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <!-- Mission Log -->
+                <div class="mission-log">
+                    <div class="log-title">
+                        <i class="fas fa-terminal"></i>
+                        MISSION LOG
+                    </div>
+                    <div id="missionLog">
+                        <div class="log-entry">
+                            <span class="log-icon">🚀</span>
+                            <span class="log-time" id="currentTime"></span>
+                            <span class="log-message">{{ t.initializing }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section (Initially Hidden) -->
+            <div class="results-section" id="resultsSection">
+                <div class="cyber-badge" style="background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));">
+                    <i class="fas fa-flag-checkered"></i>
+                    {{ t.completed }}
+                </div>
+                <h2 class="scanning-title">{{ t.results_title }}</h2>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-number critical" id="criticalCount">0</div>
+                        <div class="result-label">{{ t.critical }}</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-number high" id="highCount">0</div>
+                        <div class="result-label">{{ t.high }}</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-number medium" id="mediumCount">0</div>
+                        <div class="result-label">{{ t.medium }}</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-number low" id="lowCount">0</div>
+                        <div class="result-label">{{ t.low }}</div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="downloadPdf">
+                        <i class="fas fa-file-pdf"></i>
+                        {{ t.download_pdf }}
+                    </button>
+                    <a href="/" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i>
+                        {{ t.scan_again }}
+                    </a>
+                </div>
+            </div>
+
+            <!-- Loading Animation -->
+            <div class="cyber-loader" id="loader">
+                <div class="loader-dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <p style="color: var(--neon-green);" id="loaderText">{{ t.initializing }}</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Get target from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const target = urlParams.get('target');
+        const language = urlParams.get('lang') || 'uz';
+
+        // Update target display
+        document.getElementById('targetUrl').textContent = target;
+
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent =
+                now.toLocaleTimeString('en-US', { hour12: false });
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Scan simulation
+        let progress = 0;
+        const progressFill = document.getElementById('progressFill');
+        const progressPercentage = document.getElementById('progressPercentage');
+        const missionLog = document.getElementById('missionLog');
+        const currentStep = document.getElementById('currentStep');
+        const loaderText = document.getElementById('loaderText');
+
+        // Translation mappings for steps
+        const stepTranslations = {
+            'uz': {
+                'initializing': 'Tizim ishga tushirilmoqda...',
+                'access_granted': 'Kirish ruxsati berildi',
+                'target_acquired': 'Maqsad aniqlandi',
+                'scan_initiated': 'Skanerlash boshlandi',
+                'encryption_active': 'Shifrlash faol',
+                'firewall_bypassed': 'O\'t devori aylantirildi',
+                'analyzing_headers': 'Headerlar tahlil qilinmoqda',
+                'checking_ssl': 'SSL sertifikati tekshirilmoqda',
+                'deep_scan_active': 'Chuqur skanerlash faol',
+                'scanning_vulnerabilities': 'Zaifliklar skanerlanmoqda',
+                'threat_detected': 'Tahdid aniqlandi',
+                'neutralizing_threats': 'Tahdidlar bartaraf etilmoqda',
+                'finalizing': 'Natijalar yig\'ilmoqda',
+                'mission_accomplished': 'Vazifa bajarildi',
+                'completed': 'Yakunlandi'
+            },
+            'en': {
+                'initializing': 'Initializing system...',
+                'access_granted': 'Access granted',
+                'target_acquired': 'Target acquired',
+                'scan_initiated': 'Scan initiated',
+                'encryption_active': 'Encryption active',
+                'firewall_bypassed': 'Firewall bypassed',
+                'analyzing_headers': 'Analyzing headers',
+                'checking_ssl': 'Checking SSL certificate',
+                'deep_scan_active': 'Deep scan active',
+                'scanning_vulnerabilities': 'Scanning for vulnerabilities',
+                'threat_detected': 'Threat detected',
+                'neutralizing_threats': 'Neutralizing threats',
+                'finalizing': 'Finalizing results',
+                'mission_accomplished': 'Mission accomplished',
+                'completed': 'Completed'
+            },
+            'ru': {
+                'initializing': 'Инициализация системы...',
+                'access_granted': 'Доступ разрешен',
+                'target_acquired': 'Цель определена',
+                'scan_initiated': 'Сканирование начато',
+                'encryption_active': 'Шифрование активно',
+                'firewall_bypassed': 'Межсетевой экран обойден',
+                'analyzing_headers': 'Анализ заголовков',
+                'checking_ssl': 'Проверка SSL сертификата',
+                'deep_scan_active': 'Глубокое сканирование активно',
+                'scanning_vulnerabilities': 'Сканирование уязвимостей',
+                'threat_detected': 'Угроза обнаружена',
+                'neutralizing_threats': 'Нейтрализация угроз',
+                'finalizing': 'Финаализация результатов',
+                'mission_accomplished': 'Миссия выполнена',
+                'completed': 'Завершено'
+            }
+        };
+
+        // Scan steps with progress percentages
+        const scanSteps = [
+            { step: 'initializing', progress: 10, icon: '🚀', message: 'CYBERGUARD PRO TIZIMI ISHGA TUSHRILMOQDA...' },
+            { step: 'access_granted', progress: 15, icon: '🔓', message: 'KIRISH RUHSATI BERILDI - TIZIMGA KIRISH MUMKIN' },
+            { step: 'target_acquired', progress: 20, icon: '🎯', message: `MAQSAD ANIQLANDI: ${target}` },
+            { step: 'scan_initiated', progress: 25, icon: '🔄', message: 'SKANERLASH BOSHLANDI - TIZIM MA\'LUMOTLARNI YIG\'MOQDA' },
+            { step: 'encryption_active', progress: 35, icon: '🔐', message: 'SHIFRLASH FAOL - MA\'LUMOTLAR HIMOYALANMOQDA' },
+            { step: 'analyzing_headers', progress: 45, icon: '📡', message: 'HEADERLAR TAHLIL QILINMOQDA - XAVFSIZLIK SOZLAMALARI TEKSHIRILMOQDA' },
+            { step: 'firewall_bypassed', progress: 55, icon: '🛡️', message: 'OT DEVORI AYLANTIRILDI - XAVFSIZLIK TIZIMLARI TEKSHIRILMOQDA' },
+            { step: 'checking_ssl', progress: 65, icon: '📜', message: 'SSL SERTIFIKATI TEKSHIRILMOQDA - SHAXSIY MA\'LUMOTLAR HIMOYASI' },
+            { step: 'deep_scan_active', progress: 75, icon: '🔍', message: 'CHUQUR SKANERLASH FAOL - ZAIFLIKLAR QIDIRILMOQDA' },
+            { step: 'scanning_vulnerabilities', progress: 80, icon: '🚨', message: 'TAHDIDLAR ANIQLANDI - ZAIFLIKLAR KASHF ETILMOQDA' },
+            { step: 'threat_detected', progress: 85, icon: '🛠️', message: 'TAHDIDLAR BARTARAF ETILMOQDA - TIZIM XAVFSIZLIGI TA\'MINLANMOQDA' },
+            { step: 'neutralizing_threats', progress: 90, icon: '✅', message: 'VAZIFA BAJARILDI - NATIJALAR TAYYORLANMOQDA' },
+            { step: 'finalizing', progress: 95, icon: '📊', message: 'NATIJALAR QAYTA ISHLANMOQDA - HISOBOT TAYYORLANMOQDA' },
+            { step: 'mission_accomplished', progress: 100, icon: '🎉', message: 'SKANERLASH MUVOFFAQIYATLI YAKUNLANDI - HISOBOT TAYYOR' }
+        ];
+
+        function addLogEntry(icon, message) {
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="log-icon">${icon}</span>
+                <span class="log-time">${new Date().toLocaleTimeString('en-US', { hour12: false })}</span>
+                <span class="log-message">${message}</span>
+            `;
+            missionLog.appendChild(logEntry);
+            missionLog.scrollTop = missionLog.scrollHeight;
+        }
+
+        function updateProgress(stepIndex) {
+            if (stepIndex >= scanSteps.length) {
+                // Scan completed
+                showResults();
+                return;
+            }
+
+            const step = scanSteps[stepIndex];
+            progress = step.progress;
+
+            // Update progress bar
+            progressFill.style.width = `${progress}%`;
+            progressPercentage.textContent = `${progress}%`;
+
+            // Update current step
+            const stepText = stepTranslations[language][step.step] || step.step;
+            currentStep.textContent = stepText;
+            loaderText.textContent = stepText;
+
+            // Add log entry
+            addLogEntry(step.icon, step.message);
+
+            // Move to next step
+            const delay = stepIndex === 0 ? 1000 :
+                         stepIndex === scanSteps.length - 1 ? 2000 : 1500;
+
+            setTimeout(() => {
+                updateProgress(stepIndex + 1);
+            }, delay);
+        }
+
+        function showResults() {
+            // Hide loader
+            document.getElementById('loader').style.display = 'none';
+
+            // Show results section
+            document.getElementById('resultsSection').style.display = 'block';
+
+            // Simulate results (in real app, this would come from the backend)
+            setTimeout(() => {
+                document.getElementById('criticalCount').textContent = '2';
+                document.getElementById('highCount').textContent = '5';
+                document.getElementById('mediumCount').textContent = '8';
+                document.getElementById('lowCount').textContent = '3';
+            }, 500);
+        }
+
+        // PDF Download
+        document.getElementById('downloadPdf').addEventListener('click', function() {
+            addLogEntry('📄', 'PDF hisobot yuklab olinmoqda...');
+
+            // Simulate PDF download
+            setTimeout(() => {
+                addLogEntry('✅', 'PDF hisobot muvaffaqiyatli yuklab olindi!');
+                alert('PDF hisobot yuklab olindi! (Simulyatsiya)');
+            }, 2000);
+        });
+
+        // Start the scan
+        setTimeout(() => {
+            updateProgress(0);
+        }, 1000);
+    </script>
+</body>
+</html>

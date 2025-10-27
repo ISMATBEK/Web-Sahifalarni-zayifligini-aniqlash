@@ -1,1 +1,728 @@
+<!DOCTYPE html>
+<html lang="{{ current_language }}" data-theme="cyber">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t.title }} - Hollywood Security Scanner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --neon-blue: #00eeff;
+            --neon-purple: #b967ff;
+            --neon-red: #ff003c;
+            --neon-yellow: #fff000;
+            --matrix-green: #0f0;
+            --cyber-dark: #0a0a0a;
+            --cyber-darker: #050505;
+            --cyber-card: rgba(16, 16, 16, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--cyber-dark);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 65, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 238, 255, 0.03) 0%, transparent 20%),
+                linear-gradient(45deg, rgba(10, 10, 10, 0.97) 0%, rgba(5, 5, 5, 0.98) 100%);
+        }
+
+        /* Matrix Rain Background */
+        #matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        /* Cyber Header */
+        .cyber-navbar {
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(5, 5, 5, 0.98) 100%) !important;
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid var(--neon-green);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .cyber-brand {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cyber-brand i {
+            animation: pulse 2s infinite;
+        }
+
+        .language-dropdown .dropdown-toggle {
+            background: var(--cyber-card);
+            border: 1px solid var(--neon-blue);
+            color: white;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+        }
+
+        .language-dropdown .dropdown-menu {
+            background: var(--cyber-darker);
+            border: 1px solid var(--neon-green);
+            border-radius: 8px;
+        }
+
+        .language-dropdown .dropdown-item {
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .language-dropdown .dropdown-item:hover {
+            background: var(--neon-green);
+            color: var(--cyber-dark);
+        }
+
+        /* Hollywood Hero Section */
+        .hollywood-hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 120px 2rem 2rem;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 2;
+        }
+
+        .cyber-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--neon-red), var(--neon-purple));
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            animation: glow 3s infinite alternate;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 50px rgba(0, 255, 65, 0.7);
+            line-height: 1.1;
+            animation: titleGlow 4s infinite alternate;
+        }
+
+        .hero-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 3rem;
+            color: #ccc;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* Scan Form */
+        .cyber-scan-form {
+            background: var(--cyber-card);
+            border: 2px solid var(--neon-green);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem auto;
+            max-width: 700px;
+            box-shadow: 0 0 60px rgba(0, 255, 65, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .scan-input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .cyber-input {
+            flex: 1;
+            padding: 1.2rem 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid var(--neon-blue);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-family: 'Rajdhani', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-input:focus {
+            outline: none;
+            box-shadow: 0 0 30px var(--neon-blue);
+            border-color: var(--neon-blue);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .cyber-input::placeholder {
+            color: #888;
+            font-weight: 300;
+        }
+
+        .cyber-btn {
+            padding: 1.2rem 2.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', monospace;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-scan {
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
+            color: var(--cyber-dark);
+        }
+
+        .btn-pdf {
+            background: transparent;
+            color: white;
+            border: 2px solid var(--neon-purple);
+        }
+
+        .cyber-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 255, 65, 0.4);
+        }
+
+        .btn-pdf:hover {
+            background: var(--neon-purple);
+            color: var(--cyber-dark);
+            box-shadow: 0 15px 40px rgba(185, 103, 255, 0.4);
+        }
+
+        /* Features Grid */
+        .cyber-features {
+            padding: 5rem 2rem;
+            background: var(--cyber-darker);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 4rem;
+            color: var(--neon-green);
+            text-shadow: 0 0 30px var(--neon-green);
+            font-family: 'Orbitron', monospace;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--cyber-card);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 15px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            border-color: var(--neon-green);
+            box-shadow: 0 20px 50px rgba(0, 255, 65, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--neon-blue);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--neon-green);
+            font-family: 'Orbitron', monospace;
+        }
+
+        .feature-description {
+            color: #ccc;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        /* Results Section */
+        .results-section {
+            background: var(--cyber-card);
+            border: 2px solid var(--neon-blue);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 3rem auto;
+            max-width: 1000px;
+            box-shadow: 0 0 50px rgba(0, 238, 255, 0.2);
+            display: none;
+        }
+
+        /* Cyber Gallery */
+        .cyber-gallery {
+            padding: 5rem 2rem;
+            background: var(--cyber-dark);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: var(--neon-green);
+            box-shadow: 0 20px 40px rgba(0, 255, 65, 0.4);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        .cyber-footer {
+            background: var(--cyber-darker);
+            border-top: 2px solid var(--neon-green);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--neon-green);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .footer-text {
+            color: #888;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--neon-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .social-link:hover {
+            background: var(--neon-blue);
+            color: var(--cyber-dark);
+            box-shadow: 0 0 30px var(--neon-blue);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px var(--neon-red); }
+            50% { box-shadow: 0 0 40px var(--neon-purple); }
+            100% { box-shadow: 0 0 20px var(--neon-red); }
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 30px rgba(0, 255, 65, 0.7); }
+            50% { text-shadow: 0 0 60px rgba(0, 238, 255, 0.9); }
+            100% { text-shadow: 0 0 30px rgba(185, 103, 255, 0.7); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.8rem;
+            }
+
+            .scan-input-group {
+                flex-direction: column;
+            }
+
+            .cyber-scan-form {
+                padding: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        /* Matrix Rain Styles */
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix Rain Background -->
+    <canvas id="matrixCanvas"></canvas>
+
+    <!-- Cyber Navigation -->
+    <nav class="navbar navbar-expand-lg cyber-navbar">
+        <div class="container">
+            <a class="navbar-brand cyber-brand" href="/">
+                <i class="fas fa-shield-alt"></i> CYBERGUARD PRO
+            </a>
+
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown language-dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        {% if current_language == 'uz' %}🇺🇿 O'ZBEK{% endif %}
+                        {% if current_language == 'en' %}🇺🇸 ENGLISH{% endif %}
+                        {% if current_language == 'ru' %}🇷🇺 РУССКИЙ{% endif %}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item language-switch" href="#" data-language="uz">🇺🇿 O'ZBEK</a></li>
+                        <li><a class="dropdown-item language-switch" href="#" data-language="en">🇺🇸 ENGLISH</a></li>
+                        <li><a class="dropdown-item language-switch" href="#" data-language="ru">🇷🇺 РУССКИЙ</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hollywood Hero Section -->
+    <section class="hollywood-hero">
+        <div class="hero-content">
+            <div class="cyber-badge">
+                <i class="fas fa-star"></i> HOLLYWOOD SECURITY SCANNER
+            </div>
+
+            <h1 class="hero-title" id="heroTitle">
+                {{ t.hero_title }}
+            </h1>
+
+            <p class="hero-subtitle" id="heroSubtitle">
+                {{ t.hero_description }}
+            </p>
+
+            <!-- Cyber Scan Form -->
+            <div class="cyber-scan-form">
+                <div class="scan-input-group">
+                    <input type="text" class="cyber-input" id="websiteInput"
+                           placeholder="{{ t.scan_placeholder }}" autocomplete="off">
+                    <button class="cyber-btn btn-scan" id="scanButton">
+                        <i class="fas fa-satellite-dish"></i>
+                        {{ t.scan_button }}
+                    </button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="cyber-btn btn-pdf" id="downloadPdfButton">
+                        <i class="fas fa-file-pdf"></i>
+                        {{ t.download_pdf }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row text-center mt-5">
+                <div class="col-md-3 col-6">
+                    <div class="stat-number" style="color: var(--neon-green); font-size: 2.5rem; font-weight: bold;">0.5s</div>
+                    <div class="stat-label" style="color: #ccc;">Tezkor Tahlil</div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-number" style="color: var(--neon-blue); font-size: 2.5rem; font-weight: bold;">50+</div>
+                    <div class="stat-label" style="color: #ccc;">Zaifliklar</div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-number" style="color: var(--neon-purple); font-size: 2.5rem; font-weight: bold;">24/7</div>
+                    <div class="stat-label" style="color: #ccc;">Ish Vaqti</div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-number" style="color: var(--neon-red); font-size: 2.5rem; font-weight: bold;">100%</div>
+                    <div class="stat-label" style="color: #ccc;">Aniqlik</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cyber Features -->
+    <section class="cyber-features">
+        <h2 class="section-title">{{ t.security_level }}</h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bug"></i>
+                </div>
+                <h3 class="feature-title">{{ t.vulnerabilities }}</h3>
+                <p class="feature-description">
+                    SQL Injection, XSS, CSRF va boshqa keng tarqalgan hujumlarni aniqlash.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">SSL Tahlili</h3>
+                <p class="feature-description">
+                    SSL sertifikatlari, shifrlash protokollari va xavfsizlik sozlamalarini tekshirish.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="feature-title">Chuqur Skanerlash</h3>
+                <p class="feature-description">
+                    Subdomenlar, fayl tizimlari va yashirin ma'lumotlarni keng qamrovli skanerlash.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <h3 class="feature-title">PDF Hisobot</h3>
+                <p class="feature-description">
+                    Batafsil PDF hisobotlari bilan professional tahlil natijalari.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="container">
+        <div id="scanResults" class="results-section"></div>
+    </section>
+
+    <!-- Cyber Gallery -->
+    <section class="cyber-gallery">
+        <h2 class="section-title">🔍 SECURITY GALLERY</h2>
+
+        <div class="gallery-grid">
+            {% for i in range(1, 9) %}
+            <div class="gallery-item">
+                <img src="{{ url_for('static', filename='images/image' ~ i ~ '.jpg') }}"
+                     alt="Cyber Security {{ i }}"
+                     onerror="this.src='https://picsum.photos/400/300?random={{ i }}&grayscale&blur=2'">
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Cyber Footer -->
+    <footer class="cyber-footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-shield-alt"></i> CYBERGUARD PRO
+            </div>
+            <p class="footer-text">
+                Hollywood-style kiberxavfsizlik skaneri - Sizning veb-saytingizning xavfsizligini professional darajada himoya qilish.
+            </p>
+
+            <div class="social-links">
+                <a href="#" class="social-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-telegram"></i>
+                </a>
+            </div>
+
+            <p class="copyright">
+                © 2024 CyberGuard Pro. Barcha huquqlar himoyalangan. | Hollywood Security Scanner
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- Matrix Rain Script -->
+    <script>
+        // Matrix Rain Effect
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = "01010101010101010101010101010101010101010101010101";
+        const charArray = chars.split("");
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.random() * 100;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(10, 10, 10, 0.04)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#00ff41";
+            ctx.font = fontSize + "px monospace";
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 35);
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Language switching
+        document.querySelectorAll('.language-switch').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const lang = this.getAttribute('data-language');
+                window.location.href = `/?lang=${lang}`;
+            });
+        });
+    </script>
+</body>
+</html>
